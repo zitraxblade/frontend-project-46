@@ -1,44 +1,58 @@
-import _ from 'lodash';
+const makeIndent = (depth, spacesCount = 4) =>
+  ' '.repeat(depth * spacesCount - 2);
 
-const repeat = (count) => ' '.repeat(count);
+const makeBracketIndent = (depth, spacesCount = 4) =>
+  ' '.repeat((depth - 1) * spacesCount);
 
 const stringify = (value, depth) => {
-  if (!_.isPlainObject(value)) {
-    return value === null ? 'null' : String(value);
+  if (value === null || typeof value !== 'object') {
+    return String(value);
   }
-  const indent = repeat(depth * 4);
-  const entries = Object.entries(value).map(
-    ([k, v]) => `${indent}${k}: ${stringify(v, depth + 1)}`
+
+  const entries = Object.entries(value);
+  const lines = entries.map(
+    ([key, val]) =>
+      `${makeIndent(depth + 1)}  ${key}: ${stringify(val, depth + 1)}`
   );
-  return `{\n${entries.join('\n')}\n${repeat((depth - 1) * 4)}}`;
+
+  return `{\n${lines.join('\n')}\n${makeBracketIndent(depth + 1)}}`;
 };
 
-const makeIndent = (depth) => repeat(depth * 4 - 2); // for marker position
-
-export default function formatStylish(diff, depth = 1) {
-  const lines = diff.map((node) => {
-    const { key, type } = node;
+const formatStylish = (tree, depth = 1) => {
+  const lines = tree.map((node) => {
     const indent = makeIndent(depth);
-    switch (type) {
+
+    switch (node.type) {
       case 'added':
-        return `${indent}+ ${key}: ${stringify(node.value, depth + 1)}`;
+        return `${indent}+ ${node.key}: ${stringify(node.value, depth)}`;
+
       case 'removed':
-        return `${indent}- ${key}: ${stringify(node.value, depth + 1)}`;
+        return `${indent}- ${node.key}: ${stringify(node.value, depth)}`;
+
       case 'unchanged':
-        return `${indent}  ${key}: ${stringify(node.value, depth + 1)}`;
-      case 'changed': {
-        const left = `${indent}- ${key}: ${stringify(node.oldValue, depth + 1)}`;
-        const right = `${indent}+ ${key}: ${stringify(node.newValue, depth + 1)}`;
-        return `${left}\n${right}`;
-      }
-      case 'nested': {
-        const children = formatStylish(node.children, depth + 1);
-        return `${indent}  ${key}: {\n${children}\n${repeat((depth) * 4)}}`;
-      }
+        return `${indent}  ${node.key}: ${stringify(node.value, depth)}`;
+
+      case 'changed':
+        return [
+          `${indent}- ${node.key}: ${stringify(node.oldValue, depth)}`,
+          `${indent}+ ${node.key}: ${stringify(node.newValue, depth)}`
+        ].join('\n');
+
+      case 'nested':
+        return `${indent}  ${node.key}: {\n${formatStylish(
+          node.children,
+          depth + 1
+        )}\n${makeBracketIndent(depth + 1)}}`;
+
       default:
-        throw new Error(`Unknown node type: ${type}`);
+        return '';
     }
   });
 
+  if (depth === 1) {
+    return `{\n${lines.join('\n')}\n}`;
+  }
+
   return lines.join('\n');
-}
+};
+export default formatStylish;
