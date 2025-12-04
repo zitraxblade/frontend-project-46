@@ -13,9 +13,9 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "src/genDiff.js",
+  "main": "src/gendiff.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "npx -n --experimental-vm-modules jest"
   },
   "bin": {
     "gendiff": "bin/gendiff.js"
