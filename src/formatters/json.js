@@ -1,3 +1,1 @@
-export default function formatJson(diffTree) {
-  return JSON.stringify(diffTree, null, 2);
-}
+export default (tree) => JSON.stringify(tree, null, 2);

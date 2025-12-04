@@ -1,30 +1,38 @@
-const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
+import _ from 'lodash';
 
-const formatValue = (val) => {
-  if (isObject(val)) return '[complex value]';
-  if (typeof val === 'string') return `'${val}'`;
-  if (val === null) return 'null';
-  return String(val);
+const toString = (value) => {
+  if (_.isString(value)) {
+    return `'${value}'`;
+  }
+  if (_.isObject(value)) {
+    return '[complex value]';
+  }
+  return value;
 };
 
-export default function formatPlain(diff, parent = '') {
-  const lines = diff.flatMap((node) => {
-    const property = parent ? `${parent}.${node.key}` : node.key;
-    switch (node.type) {
-      case 'added':
-        return `Property '${property}' was added with value: ${formatValue(node.value)}`;
-      case 'removed':
-        return `Property '${property}' was removed`;
-      case 'changed':
-        return `Property '${property}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`;
-      case 'nested':
-        return formatPlain(node.children, property);
-      case 'unchanged':
-        return [];
-      default:
-        return [];
-    }
-  });
+const render = (tree) => {
+  const renderSubTree = (subtree, path = '') => subtree.filter(({ type }) => (type !== 'unchanged'))
+    .flatMap(({
+      type, key, value, oldValue, newValue, children,
+    }) => {
+      const newPath = (path.length === 0) ? key : `${path}.${key}`;
 
-  return lines.join('\n');
-}
+      switch (type) {
+        case 'nested':
+          return renderSubTree(children, newPath);
+        case 'updated':
+          return `Property '${newPath}' was updated. From ${toString(oldValue)} to ${toString(newValue)}`;
+        case 'added':
+          return `Property '${newPath}' was added with value: ${toString(value)}`;
+        case 'removed':
+          return `Property '${newPath}' was removed`;
+        default:
+          throw new Error(`Unknown  diff line type: '${type}'!`);
+      }
+    });
+
+  const result = renderSubTree(tree);
+  return result.join('\n');
+};
+
+export default render;

@@ -1,58 +1,48 @@
-const makeIndent = (depth, spacesCount = 4) =>
-  ' '.repeat(depth * spacesCount - 2);
+import _ from 'lodash';
 
-const makeBracketIndent = (depth, spacesCount = 4) =>
-  ' '.repeat((depth - 1) * spacesCount);
+const indentStep = 2;
+const spaceForSign = 2;
+const padding = indentStep + spaceForSign;
 
-const stringify = (value, depth) => {
-  if (value === null || typeof value !== 'object') {
-    return String(value);
+const createIndent = (indentSize) => ' '.repeat(indentSize);
+
+const toString = (data, depth) => {
+  if (Array.isArray(data)) {
+    const nestedLines = _.flatMap(data, (value) => `${createIndent(depth + padding)}  ${toString(value, depth + padding)}`);
+    return `[\n${nestedLines.join('\n')}\n${createIndent(depth + indentStep)}]`;
   }
-
-  const entries = Object.entries(value);
-  const lines = entries.map(
-    ([key, val]) =>
-      `${makeIndent(depth + 1)}  ${key}: ${stringify(val, depth + 1)}`
-  );
-
-  return `{\n${lines.join('\n')}\n${makeBracketIndent(depth + 1)}}`;
+  if (_.isPlainObject(data)) {
+    const nestedLines = _.flatMap(data, (value, key) => `${createIndent(depth + padding)}  ${key}: ${toString(value, depth + padding)}`);
+    return `{\n${nestedLines.join('\n')}\n${createIndent(depth + indentStep)}}`;
+  }
+  return data;
 };
 
-const formatStylish = (tree, depth = 1) => {
-  const lines = tree.map((node) => {
-    const indent = makeIndent(depth);
+const render = (tree) => {
+  const renderSubtree = (subtree, depth) => {
+    const result = subtree.flatMap(({
+      type, key, value, oldValue, newValue, children,
+    }) => {
+      const indent = createIndent(depth);
+      switch (type) {
+        case 'nested':
+          return `${indent}  ${key}: ${renderSubtree(children, depth + padding)}`;
+        case 'unchanged':
+          return `${indent}  ${key}: ${toString(value, depth)}`;
+        case 'updated':
+          return [`${indent}- ${key}: ${toString(oldValue, depth)}`, `${indent}+ ${key}: ${toString(newValue, depth)}`];
+        case 'added':
+          return `${indent}+ ${key}: ${toString(value, depth)}`;
+        case 'removed':
+          return `${indent}- ${key}: ${toString(value, depth)}`;
+        default:
+          throw new Error(`Unknown  diff line type: '${type}'!`);
+      }
+    });
+    return `{\n${result.join('\n')}\n${createIndent(depth - indentStep)}}`;
+  };
 
-    switch (node.type) {
-      case 'added':
-        return `${indent}+ ${node.key}: ${stringify(node.value, depth)}`;
-
-      case 'removed':
-        return `${indent}- ${node.key}: ${stringify(node.value, depth)}`;
-
-      case 'unchanged':
-        return `${indent}  ${node.key}: ${stringify(node.value, depth)}`;
-
-      case 'changed':
-        return [
-          `${indent}- ${node.key}: ${stringify(node.oldValue, depth)}`,
-          `${indent}+ ${node.key}: ${stringify(node.newValue, depth)}`
-        ].join('\n');
-
-      case 'nested':
-        return `${indent}  ${node.key}: {\n${formatStylish(
-          node.children,
-          depth + 1
-        )}\n${makeBracketIndent(depth + 1)}}`;
-
-      default:
-        return '';
-    }
-  });
-
-  if (depth === 1) {
-    return `{\n${lines.join('\n')}\n}`;
-  }
-
-  return lines.join('\n');
+  return renderSubtree(tree, indentStep);
 };
-export default formatStylish;
+
+export default render;
