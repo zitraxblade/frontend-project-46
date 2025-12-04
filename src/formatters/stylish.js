@@ -1,35 +1,49 @@
-export const formatStylish = (diff, depth = 0) => {
-  const indent = '  '.repeat(depth);
-  const lines = diff.map((node) => {
-    switch (node.type) {
-      case 'added':
-        return `${indent}+ ${node.key}: ${formatValue(node.value, depth + 1)}`;
-      case 'removed':
-        return `${indent}- ${node.key}: ${formatValue(node.value, depth + 1)}`;
-      case 'changed':
-        return [
-          `${indent}- ${node.key}: ${formatValue(node.oldValue, depth + 1)}`,
-          `${indent}+ ${node.key}: ${formatValue(node.newValue, depth + 1)}`
-        ].join('\n');
-      case 'unchanged':
-        return `${indent}  ${node.key}: ${formatValue(node.value, depth + 1)}`;
-      case 'nested':
-        return `${indent}  ${node.key}: {\n${formatStylish(node.children, depth + 1)}\n${indent}  }`;
-      default:
-        return '';
-    }
-  });
+import _ from 'lodash';
 
-  return lines.join('\n');
-};
+const repeat = (count) => ' '.repeat(count);
 
-const formatValue = (value, depth) => {
-  if (value && typeof value === 'object') {
-    const indent = '  '.repeat(depth);
-    const lines = Object.entries(value).map(
-      ([k, v]) => `${indent}${k}: ${v}`
-    );
-    return `{\n${lines.join('\n')}\n${'  '.repeat(depth - 1)}}`;
+// depth: 0 -> root, indent calculation: baseIndent = depth * 4
+const indent = (depth) => repeat(depth * 4 - 2); // для символов +/- и пробела
+
+const stringify = (value, depth) => {
+  if (!_.isPlainObject(value)) {
+    if (value === null) return 'null';
+    return String(value);
   }
-  return value;
+  const entries = Object.entries(value);
+  const lines = entries.map(([k, v]) => {
+    if (_.isPlainObject(v)) {
+      return `${repeat((depth + 1) * 4)}${k}: ${stringify(v, depth + 1)}`;
+    }
+    return `${repeat((depth + 1) * 4)}${k}: ${v === null ? 'null' : v}`;
+  });
+  return `{\n${lines.join('\n')}\n${repeat(depth * 4)}}`;
 };
+
+export function formatStylish(diffTree) {
+  const iter = (tree, depth) => {
+    const lines = tree.flatMap((node) => {
+      const key = node.key;
+      switch (node.type) {
+        case 'added':
+          return `${indent(depth)}+ ${key}: ${stringify(node.value, depth)}`;
+        case 'removed':
+          return `${indent(depth)}- ${key}: ${stringify(node.value, depth)}`;
+        case 'unchanged':
+          return `${indent(depth)}  ${key}: ${stringify(node.value, depth)}`;
+        case 'changed':
+          return [
+            `${indent(depth)}- ${key}: ${stringify(node.oldValue, depth)}`,
+            `${indent(depth)}+ ${key}: ${stringify(node.newValue, depth)}`,
+          ];
+        case 'nested':
+          return `${indent(depth)}  ${key}: {\n${iter(node.children, depth + 1)}\n${repeat(depth * 4)}  }`;
+        default:
+          return [];
+      }
+    });
+    return lines.join('\n');
+  };
+
+  return `{\n${iter(diffTree, 1)}\n}`;
+}
