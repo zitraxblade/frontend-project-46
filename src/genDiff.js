@@ -1,19 +1,33 @@
 import fs from 'fs';
 import path from 'path';
-import { parseFile } from './parsers.js'; 
+import yaml from 'js-yaml';
 import { buildDiff } from './buildDiff.js';
 import { formatters } from './formatters/index.js';
 
-export const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
-  const full1 = path.resolve(process.cwd(), filepath1);
-  const full2 = path.resolve(process.cwd(), filepath2);
+const parseFile = (filepath) => {
+  const ext = path.extname(filepath).toLowerCase();
+  const content = fs.readFileSync(filepath, 'utf-8');
 
-  const data1 = parseFile(full1);
-  const data2 = parseFile(full2);
+  if (ext === '.json') return JSON.parse(content);
+  if (ext === '.yml' || ext === '.yaml') return yaml.load(content);
+
+  throw new Error(`Unsupported file type: ${ext}`);
+};
+
+export const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
+  const fullPath1 = path.resolve(process.cwd(), filepath1);
+  const fullPath2 = path.resolve(process.cwd(), filepath2);
+
+  const data1 = parseFile(fullPath1);
+  const data2 = parseFile(fullPath2);
 
   const diffTree = buildDiff(data1, data2);
 
   const formatter = formatters[formatName] || formatters.stylish;
-  return formatter(diffTree);
+  const formatted = formatter(diffTree);
+  // stylish expects inner lines (without outer braces) in our implementation above.
+  if (formatName === 'stylish' || !formatName) {
+    return `{\n${formatted}\n}`;
+  }
+  return formatted;
 };
-export default genDiff;

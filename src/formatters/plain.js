@@ -1,13 +1,13 @@
-const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
+const isObject = (val) => val && typeof val === 'object' && !Array.isArray(val);
 
-const formatValue = (value) => {
-  if (isObject(value)) return '[complex value]';
-  if (typeof value === 'string') return `'${value}'`;
-  if (value === null) return 'null';
-  return String(value);
+const formatValue = (val) => {
+  if (isObject(val)) return '[complex value]';
+  if (typeof val === 'string') return `'${val}'`;
+  if (val === null) return 'null';
+  return String(val);
 };
 
-export function formatPlain(diff, parent = '') {
+export default function formatPlain(diff, parent = '') {
   const lines = diff.flatMap((node) => {
     const property = parent ? `${parent}.${node.key}` : node.key;
     switch (node.type) {
@@ -20,9 +20,11 @@ export function formatPlain(diff, parent = '') {
       case 'nested':
         return formatPlain(node.children, property);
       case 'unchanged':
+        return [];
       default:
         return [];
     }
   });
+
   return lines.join('\n');
 }
