@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
-import gendiff from '../src/gendiff.js';
+import gendiff from '../src/genDiff.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

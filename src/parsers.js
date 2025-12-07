@@ -12,6 +12,7 @@ const parseNumber = (value) => {
   const convertedValue = Number(value);
   return (Number.isNaN(convertedValue)) ? value : convertedValue;
 };
+
 const parseIni = (data) => {
   const tree = ini.parse(data);
   const parseSubTree = (subTree) => _.reduce(subTree, (acc, value, key) => {
@@ -28,7 +29,7 @@ export default (data, dataType) => {
     case 'json':
       return JSON.parse(data);
     case 'yml':
-      return yaml.safeLoad(data);
+      return yaml.load(data); // <-- исправлено
     case 'ini':
       return parseIni(data);
     default:
