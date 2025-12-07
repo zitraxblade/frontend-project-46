@@ -15,8 +15,13 @@
   "type": "module",
   "main": "src/genDiff.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
-  },
+  "install": "npm ci",
+  "lint": "npx eslint . --fix",
+  "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js",
+  "test:coverage": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+  "test:update-snapshot": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js -u",
+  "publish:dry-run": "npm publish --dry-run"
+},
   "bin": {
     "gendiff": "bin/gendiff.js"
   },

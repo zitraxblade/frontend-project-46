@@ -1,38 +1,38 @@
-import _ from 'lodash';
-import yaml from 'js-yaml';
-import ini from 'ini';
+import _ from 'lodash'
+import yaml from 'js-yaml'
+import ini from 'ini'
 
-const parseNumber = value => {
+const parseNumber = (value) => {
   if (Array.isArray(value)) {
-    return value.map(item => parseNumber(item));
+    return value.map(item => parseNumber(item))
   }
   if (!_.isString(value)) {
-    return value;
+    return value
   }
-  const convertedValue = Number(value);
-  return (Number.isNaN(convertedValue)) ? value : convertedValue;
-};
+  const convertedValue = Number(value)
+  return (Number.isNaN(convertedValue)) ? value : convertedValue
+}
 
-const parseIni = data => {
-  const tree = ini.parse(data);
+const parseIni = (data) => {
+  const tree = ini.parse(data)
   const parseSubTree = subTree => _.reduce(subTree, (acc, value, key) => {
     if (_.isPlainObject(value)) {
-      return { ...acc, [key]: parseSubTree(value) };
+      return { ...acc, [key]: parseSubTree(value) }
     }
-    return { ...acc, [key]: parseNumber(value) };
-  }, {});
-  return parseSubTree(tree);
-};
+    return { ...acc, [key]: parseNumber(value) }
+  }, {})
+  return parseSubTree(tree)
+}
 
 export default (data, dataType) => {
   switch (dataType) {
     case 'json':
-      return JSON.parse(data);
+      return JSON.parse(data)
     case 'yml':
-      return yaml.load(data); // <-- исправлено
+      return yaml.load(data) // <-- исправлено
     case 'ini':
-      return parseIni(data);
+      return parseIni(data)
     default:
-      throw new Error(`Unknown type of data: '${dataType}'!`);
+      throw new Error(`Unknown type of data: '${dataType}'!`)
   }
-};
+}
