@@ -15,13 +15,10 @@
   "type": "module",
   "main": "src/genDiff.js",
   "scripts": {
-  "install": "npm ci",
   "lint": "npx eslint . --fix",
-  "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js",
-  "test:coverage": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-  "test:update-snapshot": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js -u",
-  "publish:dry-run": "npm publish --dry-run"
-},
+  "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js"
+}
+,
   "bin": {
     "gendiff": "bin/gendiff.js"
   },
