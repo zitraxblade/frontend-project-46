@@ -16,8 +16,8 @@ const testTypes = [['json', 'stylish'],
   ['ini', 'json'],
   ['ini', 'json']];
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+const getFixturePath = filename => path.join(__dirname, '..', '__fixtures__', filename);
+const readFile = filename => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
 test.each(testTypes)('compare files with type: %s, output format: %s', (fileExt, outputFormat) => {
   const filepath1 = getFixturePath(`file1.${fileExt}`);

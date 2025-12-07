@@ -4,7 +4,7 @@ import buildDiff from './buildDiff.js';
 import parse from './parsers.js';
 import format from './formatters/index.js';
 
-const getData = (filePath) => {
+const getData = filePath => {
   const fileFormat = path.extname(filePath).slice(1);
   const data = fs.readFileSync(filePath, 'utf-8');
   return parse(data, fileFormat);

@@ -4,11 +4,11 @@ const indentStep = 2;
 const spaceForSign = 2;
 const padding = indentStep + spaceForSign;
 
-const createIndent = (indentSize) => ' '.repeat(indentSize);
+const createIndent = indentSize => ' '.repeat(indentSize);
 
 const toString = (data, depth) => {
   if (Array.isArray(data)) {
-    const nestedLines = _.flatMap(data, (value) => `${createIndent(depth + padding)}  ${toString(value, depth + padding)}`);
+    const nestedLines = _.flatMap(data, value => `${createIndent(depth + padding)}  ${toString(value, depth + padding)}`);
     return `[\n${nestedLines.join('\n')}\n${createIndent(depth + indentStep)}]`;
   }
   if (_.isPlainObject(data)) {
@@ -18,7 +18,7 @@ const toString = (data, depth) => {
   return data;
 };
 
-const render = (tree) => {
+const render = tree => {
   const renderSubtree = (subtree, depth) => {
     const result = subtree.flatMap(({
       type, key, value, oldValue, newValue, children,

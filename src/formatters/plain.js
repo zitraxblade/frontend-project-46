@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const toString = (value) => {
+const toString = value => {
   if (_.isString(value)) {
     return `'${value}'`;
   }
@@ -10,7 +10,7 @@ const toString = (value) => {
   return value;
 };
 
-const render = (tree) => {
+const render = tree => {
   const renderSubTree = (subtree, path = '') => subtree.filter(({ type }) => (type !== 'unchanged'))
     .flatMap(({
       type, key, value, oldValue, newValue, children,

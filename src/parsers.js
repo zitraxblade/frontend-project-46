@@ -2,9 +2,9 @@ import _ from 'lodash';
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-const parseNumber = (value) => {
+const parseNumber = value => {
   if (Array.isArray(value)) {
-    return value.map((item) => parseNumber(item));
+    return value.map(item => parseNumber(item));
   }
   if (!_.isString(value)) {
     return value;
@@ -13,9 +13,9 @@ const parseNumber = (value) => {
   return (Number.isNaN(convertedValue)) ? value : convertedValue;
 };
 
-const parseIni = (data) => {
+const parseIni = data => {
   const tree = ini.parse(data);
-  const parseSubTree = (subTree) => _.reduce(subTree, (acc, value, key) => {
+  const parseSubTree = subTree => _.reduce(subTree, (acc, value, key) => {
     if (_.isPlainObject(value)) {
       return { ...acc, [key]: parseSubTree(value) };
     }
