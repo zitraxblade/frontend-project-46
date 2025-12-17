@@ -17,3 +17,4 @@ gendiff filepath1 filepath2 для сравнения двух файлов с �
 gendiff -f plain filepath1 filepath2 либо gendiff -f plain filepath1 filepath2 для сравнения двух файлов с форматированием результата в плоском текстовом формате (plain)
 gendiff -f json filepath1 filepath2 либо gendiff -f json filepath1 filepath2 для сравнения двух файлов с форматированием результата в формате JSON
 gendiff __fixtures__/file1.json __fixtures__/file2.json --format json
+<img width="1096" height="804" alt="image" src="https://github.com/user-attachments/assets/8e1ec1ad-a2c5-4ef6-a2dd-248fc4ff3b5a" />
