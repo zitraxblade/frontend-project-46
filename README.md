@@ -5,16 +5,11 @@
 Проект "Вычислитель отличий"
 Установка зависимостей: make install
 Пример работы с json файлами с вложенными структурами, вывод в формате "plain"
-<img width="569" height="252" alt="image" src="https://github.com/user-attachments/assets/73b9839a-0e67-4f5a-ab52-493da6b3bd2c" />
-Пример работы рекурсивного сравнения:
-<img width="794" height="550" alt="image" src="https://github.com/user-attachments/assets/c6a31ea3-b4c6-4692-92fd-2d25d76d8d94" />
-Пример работы сравнение плоских файлов (yaml)
-<img width="588" height="253" alt="image" src="https://github.com/user-attachments/assets/8bdfcb39-5cdd-44ac-b51f-5cbabbc0147c" />
+<img width="572" height="224" alt="image" src="https://github.com/user-attachments/assets/e031ce9a-e46b-420c-b344-32f065a2f11b" />
+Сравнение плоских файлов (JSON):
+<img width="854" height="550" alt="image" src="https://github.com/user-attachments/assets/2095ce9b-8e32-44b2-8c0a-c79a17b0b8cc" />
+Рекурсивное сравнение файлов (YML):
 
+Вывод справки программы:
+<img width="516" height="187" alt="image" src="https://github.com/user-attachments/assets/eca46253-8adb-4f25-81df-0e24a7b8be5c" />![9bcc795f-f50d-421b-8ccc-8bda616f7ae0](https://github.com/user-attachments/assets/afb193a6-6ec2-4f4d-a336-4b4ad83e6cab)
 
-
-gendiff filepath1 filepath2 для сравнения двух файлов с форматированием результата по умолчанию (stylish)
-gendiff -f plain filepath1 filepath2 либо gendiff -f plain filepath1 filepath2 для сравнения двух файлов с форматированием результата в плоском текстовом формате (plain)
-gendiff -f json filepath1 filepath2 либо gendiff -f json filepath1 filepath2 для сравнения двух файлов с форматированием результата в формате JSON
-gendiff __fixtures__/file1.json __fixtures__/file2.json --format json
-<img width="1096" height="804" alt="image" src="https://github.com/user-attachments/assets/8e1ec1ad-a2c5-4ef6-a2dd-248fc4ff3b5a" />
