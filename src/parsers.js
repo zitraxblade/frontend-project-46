@@ -29,7 +29,7 @@ export default (data, dataType) => {
     case 'json':
       return JSON.parse(data)
     case 'yml':
-      return yaml.load(data) // <-- исправлено
+      return yaml.load(data)
     case 'ini':
       return parseIni(data)
     default:
